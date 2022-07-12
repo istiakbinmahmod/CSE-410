@@ -27,6 +27,13 @@ public:
         this->z = z;
         this->w = w;
     }
+    Point &operator=(const Point other)
+    {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+        return *this;
+    }
     void normalize()
     {
         double length = sqrt(x * x + y * y + z * z);
@@ -275,7 +282,7 @@ int main()
     std::cout << std::setprecision(2) << std::fixed;
     ifstream input;
     ofstream output;
-    input.open("./test-cases/2/scene.txt");
+    input.open("../1/scene.txt");
     if (!input.is_open())
     {
         cout << "Error opening file" << endl;
@@ -291,7 +298,7 @@ int main()
     stack<Transformation> transformations;
     transformations.push(Transformation());
 
-    output.open("./test-cases/2/output1.txt");
+    output.open("../1/output1.txt");
     if (!output.is_open())
     {
         cout << "Error opening file" << endl;
@@ -390,8 +397,8 @@ int main()
     viewT.viewMatrix(Point(eyeX, eyeY, eyeZ, 1.0),
                      Point(lookX, lookY, lookZ, 1.0),
                      Point(upX, upY, upZ, 1.0));
-    input.open("./test-cases/2/output1.txt");
-    output.open("./test-cases/2/output2.txt");
+    input.open("../1/output1.txt");
+    output.open("../1/output2.txt");
     for (int i = 0; i < Triangle_Count; i++)
     {
         Point p1, p2, p3;
@@ -417,8 +424,8 @@ int main()
     // stage 3
     Transformation projectionT;
     projectionT.projectMatrix(fovY, aspectRatio, near, far);
-    input.open("./test-cases/2/output2.txt");
-    output.open("./test-cases/2/output3.txt");
+    input.open("../1/output2.txt");
+    output.open("../1/output3.txt");
     for (int i = 0; i < Triangle_Count; i++)
     {
         Point p1, p2, p3;
@@ -441,8 +448,8 @@ int main()
     output.close();
 
     // stage 4
-    input.open("./test-cases/2/config.txt");
-    output.open("./test-cases/2/output4.txt");
+    input.open("../1/config.txt");
+    output.open("../1/output4.txt");
 
     int Screen_Width, Screen_Height;
     double Left_Limit_X, Right_Limit_X;
@@ -458,13 +465,13 @@ int main()
 
     double dx = (Right_Limit_X - Left_Limit_X) / Screen_Width;
     double dy = (Top_Limit_Y - Bottom_Limit_Y) / Screen_Height;
-    double Top_Y = Top_Limit_Y - dy / 2;
-    double Left_X = Left_Limit_X + dx / 2;
-    double Bottom_Y = Bottom_Limit_Y + dy / 2;
-    double Right_X = Right_Limit_X - dx / 2;
+    double Top_Y = Top_Limit_Y - dy / 2.0;
+    double Left_X = Left_Limit_X + dx / 2.0;
+    double Bottom_Y = Bottom_Limit_Y + dy / 2.0;
+    double Right_X = Right_Limit_X - dx / 2.0;
 
     input.close();
-    input.open("./test-cases/2/output3.txt");
+    input.open("../1/output3.txt");
 
     Triangle triangles[Triangle_Count];
     srand(time(0));
@@ -473,9 +480,20 @@ int main()
     {
         Point p1, p2, p3;
         input >> p1.x >> p1.y >> p1.z >> p2.x >> p2.y >> p2.z >> p3.x >> p3.y >> p3.z;
-        triangles[i].points[0] = p1;
-        triangles[i].points[1] = p2;
-        triangles[i].points[2] = p3;
+        triangles[i].points[0].x = p1.x;
+        triangles[i].points[0].y = p1.y;
+        triangles[i].points[0].z = p1.z;
+        triangles[i].points[0].scale();
+        triangles[i].points[1].x = p2.x;
+        triangles[i].points[1].y = p2.y;
+        triangles[i].points[1].z = p2.z;
+        triangles[i].points[1].scale();
+        triangles[i].points[2].x = p3.x;
+        triangles[i].points[2].y = p3.y;
+        triangles[i].points[2].z = p3.z;
+        triangles[i].points[2].scale();
+        // triangles[i].points[1] = p2;
+        // triangles[i].points[2] = p3;
         triangles[i].color.redValue = rand() % 255;
         triangles[i].color.greenValue = rand() % 255;
         triangles[i].color.blueValue = rand() % 255;
@@ -558,40 +576,81 @@ int main()
             Point p1, p2, p3;
             if (ys <= triangles[i].points[0].y && ys >= triangles[i].points[1].y && ys >= triangles[i].points[2].y)
             {
-                p1 = triangles[i].points[0];
-                p2 = triangles[i].points[1];
-                p3 = triangles[i].points[2];
+                p1.x = triangles[i].points[0].x;
+                p1.y = triangles[i].points[0].y;
+                p1.z = triangles[i].points[0].z;
+                p2.x = triangles[i].points[1].x;
+                p2.y = triangles[i].points[1].y;
+                p2.z = triangles[i].points[1].z;
+                p3.x = triangles[i].points[2].x;
+                p3.y = triangles[i].points[2].y;
+                p3.z = triangles[i].points[2].z;
             }
             else if (ys >= triangles[i].points[0].y && ys <= triangles[i].points[1].y && ys <= triangles[i].points[2].y)
             {
-                p1 = triangles[i].points[0];
-                p2 = triangles[i].points[1];
-                p3 = triangles[i].points[2];
+                p1.x = triangles[i].points[0].x;
+                p1.y = triangles[i].points[0].y;
+                p1.z = triangles[i].points[0].z;
+                p2.x = triangles[i].points[1].x;
+                p2.y = triangles[i].points[1].y;
+                p2.z = triangles[i].points[1].z;
+                p3.x = triangles[i].points[2].x;
+                p3.y = triangles[i].points[2].y;
+                p3.z = triangles[i].points[2].z;
             }
             else if (ys <= triangles[i].points[1].y && ys >= triangles[i].points[0].y && ys >= triangles[i].points[2].y)
             {
-                p1 = triangles[i].points[1];
-                p2 = triangles[i].points[0];
-                p3 = triangles[i].points[2];
+                p1.x = triangles[i].points[1].x;
+                p1.y = triangles[i].points[1].y;
+                p1.z = triangles[i].points[1].z;
+                p2.x = triangles[i].points[0].x;
+                p2.y = triangles[i].points[0].y;
+                p2.z = triangles[i].points[0].z;
+                p3.x = triangles[i].points[2].x;
+                p3.y = triangles[i].points[2].y;
+                p3.z = triangles[i].points[2].z;
             }
             else if (ys >= triangles[i].points[1].y && ys <= triangles[i].points[0].y && ys <= triangles[i].points[2].y)
             {
-                p1 = triangles[i].points[1];
-                p2 = triangles[i].points[0];
-                p3 = triangles[i].points[2];
+                p1.x = triangles[i].points[1].x;
+                p1.y = triangles[i].points[1].y;
+                p1.z = triangles[i].points[1].z;
+                p2.x = triangles[i].points[0].x;
+                p2.y = triangles[i].points[0].y;
+                p2.z = triangles[i].points[0].z;
+                p3.x = triangles[i].points[2].x;
+                p3.y = triangles[i].points[2].y;
+                p3.z = triangles[i].points[2].z;
             }
             else if (ys <= triangles[i].points[2].y && ys >= triangles[i].points[0].y && ys >= triangles[i].points[1].y)
             {
-                p1 = triangles[i].points[2];
-                p2 = triangles[i].points[0];
-                p3 = triangles[i].points[1];
+                p1.x = triangles[i].points[2].x;
+                p1.y = triangles[i].points[2].y;
+                p1.z = triangles[i].points[2].z;
+                p2.x = triangles[i].points[0].x;
+                p2.y = triangles[i].points[0].y;
+                p2.z = triangles[i].points[0].z;
+                p3.x = triangles[i].points[1].x;
+                p3.y = triangles[i].points[1].y;
+                p3.z = triangles[i].points[1].z;
             }
             else if (ys >= triangles[i].points[2].y && ys <= triangles[i].points[0].y && ys <= triangles[i].points[1].y)
             {
-                p1 = triangles[i].points[2];
-                p2 = triangles[i].points[0];
-                p3 = triangles[i].points[1];
+                p1.x = triangles[i].points[2].x;
+                p1.y = triangles[i].points[2].y;
+                p1.z = triangles[i].points[2].z;
+                p2.x = triangles[i].points[0].x;
+                p2.y = triangles[i].points[0].y;
+                p2.z = triangles[i].points[0].z;
+                p3.x = triangles[i].points[1].x;
+                p3.y = triangles[i].points[1].y;
+                p3.z = triangles[i].points[1].z;
             }
+
+            // cout << "p1: " << p1.x << " " << p1.y << endl;
+            // cout << "p2: " << p2.x << " " << p2.y << endl;
+            // cout << "p3: " << p3.x << " " << p3.y << endl;
+
             double xa = p1.x;
             double xb = p1.x;
             if (p2.y != p1.y)
@@ -605,9 +664,10 @@ int main()
             if (xa > xb)
                 swap(xa, xb);
 
-            cout << xa << " " << xb << endl;
+            // cout << "xa :" << xa << " and xb : " << xb << endl;
             double za = p1.z;
             double zb = p1.z;
+
             if (p2.y != p1.y)
             {
                 za += (p2.z - p1.z) * (ys - p1.y) / (p2.y - p1.y);
@@ -634,11 +694,15 @@ int main()
             {
                 Right_Intersecting_Column = Screen_Width - 1 - (int)round((Right_X - xb) / dx);
             }
+
             double Constant_Term = 0.0;
             if (xb != xa)
             {
                 Constant_Term = (dx * (zb - za)) / (xb - xa);
             }
+
+            // cout << "Constant Term is : " << Constant_Term << endl;
+
             double zp;
             for (int col_no = Left_Intersecting_Column; col_no <= Right_Intersecting_Column; col_no++)
             {
@@ -679,19 +743,21 @@ int main()
     /* saving outputs */
     bitmap_image bitmapImage(Screen_Width, Screen_Height);
 
-    for(int row=0; row<Screen_Height; row++) {
-        for(int column=0; column<Screen_Width; column++) {
+    for (int row = 0; row < Screen_Height; row++)
+    {
+        for (int column = 0; column < Screen_Width; column++)
+        {
             bitmapImage.set_pixel(column, row, intensity_Buffer[row][column].redValue, intensity_Buffer[row][column].greenValue, intensity_Buffer[row][column].blueValue);
         }
     }
-    bitmapImage.save_image("./test-cases/2/iistiakl.bmp");
+    bitmapImage.save_image("../1/iistiakl.bmp");
 
-    for(int i = 0; i < Screen_Height; i++)
+    for (int i = 0; i < Screen_Height; i++)
     {
-        delete [] Z_Buffer[i];
-        delete [] intensity_Buffer[i];
+        delete[] Z_Buffer[i];
+        delete[] intensity_Buffer[i];
     }
-    delete [] Z_Buffer;
-    delete [] intensity_Buffer;
+    delete[] Z_Buffer;
+    delete[] intensity_Buffer;
     return 0;
 }

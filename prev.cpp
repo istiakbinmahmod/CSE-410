@@ -138,13 +138,14 @@ ofstream& operator<<(ofstream &output, Point &point) {
 }
 
 class Transformation {
-    double matrix[4][4];
+    
 
     void generateIdentityMatrix();
     Point applyRodriguesFormula(Point, Point, double);
     void multiplyMatrices(Transformation);
 
 public:
+double matrix[4][4];
     Transformation() {
         generateIdentityMatrix();
     }
@@ -281,6 +282,17 @@ Transformation Transformation::operator*(const Transformation transformation) {
     return temp;
 }
 
+void printMatrix(Transformation t)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+            cout << t.matrix[i][j] << " ";
+        cout << endl;
+    }
+    cout << endl;
+}
+
 Point Transformation::operator*(const Point point) {
     /* 4x4 & 4x1 matrices multiplication */
     double temp[4];
@@ -311,7 +323,7 @@ int main(int argc, char** argv) {
     ofstream output;
 
     /* setting test case directory name */
-    string testCaseDir = "2";
+    string testCaseDir = "1";
 
     /* preparing input for extracting values from scene.txt */
     input.open("./test-cases/"+testCaseDir+"/scene.txt");
@@ -380,6 +392,7 @@ int main(int argc, char** argv) {
             Transformation temp = transformationMatrixStack.top()*translationTransformation;
             transformationMatrixStack.pop();
             transformationMatrixStack.push(temp);
+            printMatrix(temp);
         } else if(command.compare("scale") == 0) {
             double sx, sy, sz;
             input >> sx >> sy >> sz;
@@ -390,6 +403,7 @@ int main(int argc, char** argv) {
             Transformation temp = transformationMatrixStack.top()*scalingTransformation;
             transformationMatrixStack.pop();
             transformationMatrixStack.push(temp);
+            printMatrix(temp);
         } else if(command.compare("rotate") == 0) {
             double angle, ax, ay, az;
             input >> angle >> ax >> ay >> az;
@@ -400,6 +414,7 @@ int main(int argc, char** argv) {
             Transformation temp = transformationMatrixStack.top()*rotationTransformation;
             transformationMatrixStack.pop();
             transformationMatrixStack.push(temp);
+            printMatrix(temp);
         } else if(command.compare("push") == 0) {
             Transformation temp;
             temp = temp*transformationMatrixStack.top();
@@ -660,7 +675,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            cout << maxX << " " << minX <<  endl;
+            // cout << maxX << " " << minX <<  endl;
 
             /* finding leftIntersectingColumn & rightIntersectingColumn after necessary clipping */
             if(intersectingPoints[minIndex].getX() <= leftX) {
